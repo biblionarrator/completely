@@ -157,6 +157,21 @@ function completely(container, config) {
         onEnter :     function() {},               // defaults to no action.
         onTab :       function() {},               // defaults to no action.
         onChange:     function() { rs.repaint() }, // defaults to repainting.
+        handlers: {
+            hint: function (opt) {
+                return opt;
+            },
+            format: function (opt) {
+                return opt;
+            },
+            match: function (target, opts) {
+                for (var ii = 0; ii < opts.length; ii++) {
+                    if (opts[ii].toLowerCase().indexOf(target.toLowerCase()) === 0) {
+                        return opts[ii];
+                    }
+                }
+            }
+        },
         startFrom:    0,
         options:      [],
         wrapper : wrapper,      // Only to allow  easy access to the HTML elements to the final user (possibly for minor customizations)
@@ -185,14 +200,7 @@ function completely(container, config) {
             leftSide =  text.substring(0,startFrom);
             
             // updating the hint. 
-            txtHint.value ='';
-            for (var i=0;i<optionsLength;i++) {
-                var opt = options[i];
-                if (opt.indexOf(token)===0) {         // <-- how about upperCase vs. lowercase
-                    txtHint.value = leftSide +opt;
-                    break;
-                }
-            }
+            txtHint.value = leftSide + (rs.handlers.hint(rs.handlers.match(token, options)) || '');
             
             // moving the dropDown and refreshing it.
             dropDown.style.left = calculateWidthForText(leftSide)+'px';
