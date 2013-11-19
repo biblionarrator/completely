@@ -15,13 +15,13 @@
  *
  *  fontSize: .completely-dropdown, .completely-prompt, .completely-input, .completely-hint, .completely-spacer { font-size: 16px; }
  *  fontFamily: .completely-dropdown, .completely-prompt, .completely-input, .completely-hint, .completely-spacer { font-family: "sans-serif"; }
- *  color: .completely-prompt, .completely-input { color: #333; }
+ *  color: .completely-option, .completely-prompt, .completely-input { color: #333; }
  *  hintColor: .completely-hint { color: #aaa; }
  *  backgroundColor: .completely-prompt, .completely-input, .completely-hint { color: #333; }
  *  dropDownBorderColor: .completely-dropdown { border-color: #aaa; }
  *  dropDownZIndex: .completely-dropdown { z-index: 100; }
  *
- *  At the moment you still need to set color, backgroundColor, and dropDownOnHoverBackgroundColor via Javascript (as well as customizing with CSS per the above).
+ *  At the moment you still need to set backgroundColor, and dropDownOnHoverBackgroundColor via Javascript (as well as customizing with CSS per the above).
 **/
 
 .completely-dropdown {
@@ -69,6 +69,10 @@ input[type="text"].completely-input {
     background-color: transparent;
     vertical-align:   top;
     position:         relative;
+}
+
+.completely-option {
+    color: #333;
 }
 
 .completely-prompt {

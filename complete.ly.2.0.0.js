@@ -9,7 +9,6 @@
 function completely(container, config) {
     config = config || {};
     config.promptInnerHTML =                config.promptInnerHTML || ''; 
-    config.color =                          config.color || '#333';
     config.backgroundColor =                config.backgroundColor || '#fff';
     config.dropDownOnHoverBackgroundColor = config.dropDownOnHoverBackgroundColor || '#ddd';
     
@@ -66,16 +65,18 @@ function completely(container, config) {
                 
                 rows = [];
                 for (var i=0;i<array.length;i++) {
-                    if (array[i].indexOf(token)!==0) { continue; }
-                    var divRow =document.createElement('div');
-                    divRow.style.color = config.color;
-                    divRow.onmouseover = onMouseOver; 
-                    divRow.onmouseout =  onMouseOut;
-                    divRow.onmousedown = onMouseDown; 
-                    divRow.__hint =    array[i];
-                    divRow.innerHTML = token+'<b>'+array[i].substring(token.length)+'</b>';
-                    rows.push(divRow);
-                    elem.appendChild(divRow);
+                    var inner = rs.handlers.format(token, array[i]);
+                    if (inner) {
+                        var divRow = document.createElement('div');
+                        divRow.className = 'completely-option';
+                        divRow.__hint =    rs.handlers.hint(array[i]);
+                        divRow.onmouseover = onMouseOver; 
+                        divRow.onmouseout =  onMouseOut;
+                        divRow.onmousedown = onMouseDown; 
+                        divRow.innerHTML = inner;
+                        rows.push(divRow);
+                        elem.appendChild(divRow);
+                    }
                 }
                 if (rows.length===0) {
                     return; // nothing to show.
@@ -164,12 +165,12 @@ function completely(container, config) {
             format: function (opt) {
                 return opt;
             },
-            match: function (target, opts) {
-                for (var ii = 0; ii < opts.length; ii++) {
-                    if (opts[ii].toLowerCase().indexOf(target.toLowerCase()) === 0) {
-                        return opts[ii];
-                    }
-                }
+            match: function (token, opt) {
+                return opt.toLowerCase().indexOf(token.toLowerCase()) === 0;
+            },
+            format: function (token, opt) {
+                if (opt.toLowerCase().indexOf(token.toLowerCase())!==0) { return; }
+                return token+'<b>'+opt.substring(token.length)+'</b>';
             }
         },
         startFrom:    0,
@@ -200,7 +201,13 @@ function completely(container, config) {
             leftSide =  text.substring(0,startFrom);
             
             // updating the hint. 
-            txtHint.value = leftSide + (rs.handlers.hint(rs.handlers.match(token, options)) || '');
+            txtHint.value = leftSide;
+            for (var ii = 0; ii < options.length; ii++) {
+                if (rs.handlers.match(token, options[ii])) {
+                    txtHint.value = txtHint.value + (rs.handlers.hint(options[ii]) || '');
+                    break;
+                }
+            }
             
             // moving the dropDown and refreshing it.
             dropDown.style.left = calculateWidthForText(leftSide)+'px';
