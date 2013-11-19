@@ -48,8 +48,6 @@ function completely(container, config) {
         var ix = 0;
         var oldIndex = -1;
         
-        var onMouseOver =  function() { this.style.outline = '1px solid #ddd'; }
-        var onMouseOut =   function() { this.style.outline = '0'; }
         var onMouseDown =  function() { p.hide(); p.onmouseselection(this.__hint); }
         
         var p = {
@@ -70,8 +68,8 @@ function completely(container, config) {
                         var divRow = document.createElement('div');
                         divRow.className = 'completely-option';
                         divRow.__hint =    rs.handlers.hint(array[i]);
-                        divRow.onmouseover = onMouseOver; 
-                        divRow.onmouseout =  onMouseOut;
+                        if (typeof rs.handlers.option_mouseover === 'function') divRow.onmouseover = rs.handlers.option_mouseover;
+                        if (typeof rs.handlers.option_mouseout === 'function') divRow.onmouseout = rs.handlers.option_mouseout;
                         divRow.onmousedown = onMouseDown; 
                         divRow.innerHTML = inner;
                         rows.push(divRow);

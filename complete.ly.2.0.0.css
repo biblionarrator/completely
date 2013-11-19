@@ -75,6 +75,10 @@ input[type="text"].completely-input {
     color: #333;
 }
 
+.completely-option:hover {
+    outline: 1px solid #ddd;
+}
+
 .completely-prompt {
     position:         absolute;
     outline:          0;
