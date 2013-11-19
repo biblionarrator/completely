@@ -189,8 +189,6 @@ function completely(container, config) {
         repaint : function() {
             var text = txtInput.value;
             var startFrom =  rs.startFrom; 
-            var options =    rs.options;
-            var optionsLength = options.length; 
             
             // breaking text in leftSide and token.
             var token = text.substring(startFrom);
@@ -198,9 +196,9 @@ function completely(container, config) {
             
             // updating the hint. 
             txtHint.value = leftSide;
-            for (var ii = 0; ii < options.length; ii++) {
-                if (rs.handlers.match(token, options[ii])) {
-                    txtHint.value = txtHint.value + (rs.handlers.hint(options[ii]) || '');
+            for (var ii = 0; ii < rs.options.length; ii++) {
+                if (rs.handlers.match(token, rs.options[ii])) {
+                    txtHint.value = txtHint.value + (rs.handlers.hint(rs.options[ii]) || '');
                     break;
                 }
             }
