@@ -17,11 +17,11 @@
  *  fontFamily: .completely-dropdown, .completely-prompt, .completely-input, .completely-hint, .completely-spacer { font-family: "sans-serif"; }
  *  color: .completely-option, .completely-prompt, .completely-input { color: #333; }
  *  hintColor: .completely-hint { color: #aaa; }
- *  backgroundColor: .completely-prompt, .completely-input, .completely-hint { color: #333; }
+ *  backgroundColor: .completely-option, .completely-prompt, .completely-input, .completely-hint { color: #333; }
  *  dropDownBorderColor: .completely-dropdown { border-color: #aaa; }
  *  dropDownZIndex: .completely-dropdown { z-index: 100; }
+ *  dropDownOnHoverBackgroundCover: .completely-option.selected { background-color: #ddd; }
  *
- *  At the moment you still need to set backgroundColor, and dropDownOnHoverBackgroundColor via Javascript (as well as customizing with CSS per the above).
 **/
 
 .completely-dropdown {
@@ -73,6 +73,11 @@ input[type="text"].completely-input {
 
 .completely-option {
     color: #333;
+    background-color: #fff;
+}
+
+.completely-option.selected {
+    background-color: #ddd;
 }
 
 .completely-option:hover {

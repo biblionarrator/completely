@@ -9,8 +9,6 @@
 function completely(container, config) {
     config = config || {};
     config.promptInnerHTML =                config.promptInnerHTML || ''; 
-    config.backgroundColor =                config.backgroundColor || '#fff';
-    config.dropDownOnHoverBackgroundColor = config.dropDownOnHoverBackgroundColor || '#ddd';
     
     var txtInput = document.createElement('input');
     txtInput.className = 'completely-input';
@@ -99,9 +97,9 @@ function completely(container, config) {
             },
             highlight : function(index) {
                 if (oldIndex !=-1 && rows[oldIndex]) { 
-                    rows[oldIndex].style.backgroundColor = config.backgroundColor;
+                    rows[oldIndex].className  = 'completely-option';
                 }
-                rows[index].style.backgroundColor = config.dropDownOnHoverBackgroundColor; // <-- should be config
+                rows[index].className = 'completely-option selected';
                 oldIndex = index;
             },
             move : function(step) { // moves the selection either up or down (unless it's not possible) step is either +1 or -1.
