@@ -256,11 +256,14 @@ function completely(container, config) {
     var keyDownHandler = function(e) {
         e = e || window.event;
         var keyCode = e.keyCode;
+
+        if (typeof rs.handlers.keydown === 'function') rs.handlers.keydown(e);
         
         if (keyCode == 33) { return; } // page up (do nothing)
         if (keyCode == 34) { return; } // page down (do nothing);
         
         if (keyCode == 27) { //escape
+            if (typeof rs.handlers.cancel === 'function') rs.handlers.cancel(e);
             dropDownController.hide();
             txtHint.value = txtInput.value; // ensure that no hint is left.
             txtInput.focus(); 
