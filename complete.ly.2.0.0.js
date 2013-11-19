@@ -46,7 +46,11 @@ function completely(container, config) {
         var ix = 0;
         var oldIndex = -1;
         
-        var onMouseDown =  function() { p.hide(); p.onmouseselection(this.__hint); }
+        var onMouseDown =  function() {
+            if (typeof rs.handlers.option_mousedown === 'function') rs.handlers.option_mousedown.apply(this, arguments);
+            p.hide();
+            p.onmouseselection(this.__hint);
+        };
         
         var p = {
             hide :  function() { elem.style.visibility = 'hidden'; }, 
