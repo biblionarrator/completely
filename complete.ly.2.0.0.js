@@ -65,7 +65,7 @@ function completely(container, config) {
                 
                 rows = [];
                 for (var i=0;i<array.length;i++) {
-                    var inner = rs.handlers.format(token, array[i]);
+                    var inner = rs.handlers.format(array[i], token);
                     if (inner) {
                         var divRow = document.createElement('div');
                         divRow.className = 'completely-option';
@@ -162,13 +162,10 @@ function completely(container, config) {
             hint: function (opt) {
                 return opt;
             },
-            format: function (opt) {
-                return opt;
-            },
             match: function (token, opt) {
                 return opt.toLowerCase().indexOf(token.toLowerCase()) === 0;
             },
-            format: function (token, opt) {
+            format: function (opt, token) {
                 if (opt.toLowerCase().indexOf(token.toLowerCase())!==0) { return; }
                 return token+'<b>'+opt.substring(token.length)+'</b>';
             }
