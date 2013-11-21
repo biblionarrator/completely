@@ -11,20 +11,29 @@ function Completely(container, config) {
     self.container = container;
     self._controls = { };
 
+    self.id = new Date().getTime() + '-' + Math.floor(Math.random() * 100);
     var txtInput = document.createElement('input');
     txtInput.className = 'completely-input';
     txtInput.type ='text';
     txtInput.spellcheck = false; 
+    txtInput.id = 'completely-input-' + self.id;
+    if (config.prefill) {
+        txtInput.value = container.innerHTML;
+        container.innerHTML = '';
+    }
     
     var txtHint = txtInput.cloneNode(); 
     txtHint.className = 'completely-hint';
-    txtHint.disabled='';        
+    txtHint.disabled='';
+    txtHint.id = 'completely-hint-' + self.id;
     
     var wrapper = document.createElement('div');
     wrapper.className = 'completely-wrapper';
+    wrapper.id = 'completely-wrapper-' + self.id;
     
     var prompt = document.createElement('div');
     prompt.className = 'completely-prompt';
+    prompt.id = 'completely-prompt-' + self.id;
 
     document.body.appendChild(prompt);            
     var w = prompt.getBoundingClientRect().right; // works out the width of the prompt.
@@ -38,9 +47,11 @@ function Completely(container, config) {
     
     var dropDown = document.createElement('div');
     dropDown.className = 'completely-dropdown';
+    dropDown.id = 'completely-dropdown-' + self.id;
 
     var spacer = document.createElement('span'); 
     spacer.className = 'completely-spacer';
+    spacer.id = 'completely-spacer-' + self.id;
     document.body.appendChild(spacer);
 
     self._controls = {
@@ -63,12 +74,12 @@ function Completely(container, config) {
     self._calculateWidthForText = function (text) {
         // Used to encode an HTML string into a plain text.
         // taken from http://stackoverflow.com/questions/1219860/javascript-jquery-html-encoding
-        spacer.innerHTML = String(text).replace(/&/g, '&amp;')
+        self._controls.spacer.innerHTML = String(text).replace(/&/g, '&amp;')
                                        .replace(/"/g, '&quot;')
                                        .replace(/'/g, '&#39;')
                                        .replace(/</g, '&lt;')
                                        .replace(/>/g, '&gt;');
-        return spacer.getBoundingClientRect().right;
+        return self._controls.spacer.getBoundingClientRect().right;
     };
     
     /**
@@ -77,32 +88,13 @@ function Completely(container, config) {
     **/
     
     var previousInput;
-    var onChange = function (ev) {
-        if (txtInput.value.length > 0 && txtInput.value !== previousInput) {
-            previousInput = txtInput.value;
-            self.tokenentry(txtInput.value, ev);
+    self._onChange = function (ev) {
+        if (this.value.length > 0 && this.value !== previousInput) {
+            previousInput = this.value;
+            self.tokenentry(this.value, ev);
         }
     };
-    //  
-    // For user's actions, we listen to both input events and key up events
-    // It appears that input events are not enough so we defensively listen to key up events too.
-    // source: http://help.dottoro.com/ljhxklln.php
-    //
-    // The cost of listening to three sources should be negligible as the handler will invoke callback function
-    // only if the text.value was effectively changed. 
-    //  
-    // 
-    if (txtInput.addEventListener) {
-        txtInput.addEventListener("input",  onChange, false);
-        txtInput.addEventListener('keyup',  onChange, false);
-        txtInput.addEventListener('change', onChange, false);
-    } else { // is this a fair assumption: that attachEvent will exist ?
-        txtInput.attachEvent('oninput', onChange); // IE<9
-        txtInput.attachEvent('onkeyup', onChange); // IE<9
-        txtInput.attachEvent('onchange', onChange); // IE<9
-    }
-    
-    var keyDownHandler = function(ev) {
+    self._keyDownHandler = function(ev) {
         ev = ev || window.event;
         var keyCode = ev.keyCode;
 
@@ -134,9 +126,11 @@ function Completely(container, config) {
         // it's important to reset the txtHint on key down.
         // think: user presses a letter (e.g. 'x') and never releases... you get (xxxxxxxxxxxxxxxxx)
         // and you would see still the hint
-        txtHint.value =''; // resets the txtHint. (it might be updated onKeyUp)
+        self._controls.hint.value =''; // resets the txtHint. (it might be updated onKeyUp)
         
     };
+
+    self.rehook();
 
     config = config || {};
     for (var prop in config) {
@@ -144,17 +138,40 @@ function Completely(container, config) {
             self[prop] = config[prop];
         }
     }
-    
-    if (txtInput.addEventListener) {
-        txtInput.addEventListener("keydown",  keyDownHandler, false);
-    } else { // is this a fair assumption: that attachEvent will exist ?
-        txtInput.attachEvent('onkeydown', keyDownHandler); // IE<9
-    }
     setTimeout(function () {
-        txtInput.focus();
+        self._controls.input.focus();
     }, 0);
     return self;
 }
+
+Completely.prototype.rehook = function () {
+    this._controls.input = document.getElementById('completely-input-' + this.id);
+    this._controls.hint = document.getElementById('completely-hint-' + this.id);
+    this._controls.wrapper = document.getElementById('completely-wrapper-' + this.id);
+    this._controls.prompt = document.getElementById('completely-prompt-' + this.id);
+    this._controls.dropdown = document.getElementById('completely-dropdown-' + this.id);
+    this._controls.spacer = document.getElementById('completely-spacer-' + this.id);
+    //  
+    // For user's actions, we listen to both input events and key up events
+    // It appears that input events are not enough so we defensively listen to key up events too.
+    // source: http://help.dottoro.com/ljhxklln.php
+    //
+    // The cost of listening to three sources should be negligible as the handler will invoke callback function
+    // only if the text.value was effectively changed. 
+    //  
+    // 
+    if (this._controls.input.addEventListener) {
+        this._controls.input.addEventListener("input",  this._onChange, false);
+        this._controls.input.addEventListener('keyup',  this._onChange, false);
+        this._controls.input.addEventListener('change', this._onChange, false);
+        this._controls.input.addEventListener("keydown",  this._keyDownHandler, false);
+    } else { // is this a fair assumption: that attachEvent will exist ?
+        this._controls.input.attachEvent('oninput', this._onChange); // IE<9
+        this._controls.input.attachEvent('onkeyup', this._onChange); // IE<9
+        this._controls.input.attachEvent('onchange', this._onChange); // IE<9
+        this._controls.input.attachEvent('onkeydown', this._keyDownHandler); // IE<9
+    }
+};
 
 Completely.prototype.update = function () {
     var text = this._controls.input.value;
@@ -273,6 +290,7 @@ Completely.prototype.format = function (opt, token) {
 Completely.prototype.canceled = function () {
     this._controls.hint.value = this._controls.input.value; // ensure that no hint is left.
     this._controls.input.focus(); 
+    this.hideDropDown();
 };
 
 Completely.prototype.completed = function (opt) {
