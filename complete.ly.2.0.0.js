@@ -134,15 +134,14 @@ function Completely(container, config) {
 
     config = config || {};
     for (var prop in config) {
-        if (config.hasOwnProperty(prop)) {
-            self[prop] = config[prop];
-        }
+        if (config.hasOwnProperty(prop)) self[prop] = config[prop];
     }
-    setTimeout(function () {
-        self._controls.input.focus();
-    }, 0);
     return self;
 }
+
+Completely.prototype.focus = function () {
+    this._controls.input.focus();
+};
 
 Completely.prototype.rehook = function () {
     this._controls.input = document.getElementById('completely-input-' + this.id);
@@ -151,25 +150,22 @@ Completely.prototype.rehook = function () {
     this._controls.prompt = document.getElementById('completely-prompt-' + this.id);
     this._controls.dropdown = document.getElementById('completely-dropdown-' + this.id);
     this._controls.spacer = document.getElementById('completely-spacer-' + this.id);
-    //  
-    // For user's actions, we listen to both input events and key up events
-    // It appears that input events are not enough so we defensively listen to key up events too.
-    // source: http://help.dottoro.com/ljhxklln.php
-    //
-    // The cost of listening to three sources should be negligible as the handler will invoke callback function
-    // only if the text.value was effectively changed. 
-    //  
-    // 
+
+    /* Listen for input, keyup, *and* change events to make sure we catch all changes */
     if (this._controls.input.addEventListener) {
         this._controls.input.addEventListener("input",  this._onChange, false);
         this._controls.input.addEventListener('keyup',  this._onChange, false);
         this._controls.input.addEventListener('change', this._onChange, false);
         this._controls.input.addEventListener("keydown",  this._keyDownHandler, false);
-    } else { // is this a fair assumption: that attachEvent will exist ?
-        this._controls.input.attachEvent('oninput', this._onChange); // IE<9
-        this._controls.input.attachEvent('onkeyup', this._onChange); // IE<9
-        this._controls.input.attachEvent('onchange', this._onChange); // IE<9
-        this._controls.input.attachEvent('onkeydown', this._keyDownHandler); // IE<9
+        if (this.onfocus) this._controls.input.addEventListener("focus", this.onfocus, false);
+        if (this.onblur) this._controls.input.addEventListener("blur", this.onblur, false);
+    } else {
+        this._controls.input.attachEvent('oninput', this._onChange);
+        this._controls.input.attachEvent('onkeyup', this._onChange);
+        this._controls.input.attachEvent('onchange', this._onChange);
+        this._controls.input.attachEvent('onkeydown', this._keyDownHandler);
+        if (this.onfocus) this._controls.input.attachEvent("focus", this.onfocus);
+        if (this.onblur) this._controls.input.attachEvent("blur", this.onblur);
     }
 };
 
